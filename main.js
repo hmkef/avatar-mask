@@ -4,8 +4,18 @@ import App from './App'
 import Vue from 'vue' // main.js
 import uView from "uview-ui";
 import music from '@/utils/music.js'
+//引入vuex
+import store from '@/utils/store.js'
+import cuCustom from './colorui/components/cu-custom.vue'
+
+Vue.config.productionTip = false
+Vue.component('cu-custom',cuCustom)
+
+//把vuex定义成全局组件
+Vue.prototype.$store = store
+
 // 挂载到vue实例上
-Vue.prototype.$music =music 
+Vue.prototype.$music = music 
 Vue.use(uView);
 Vue.config.productionTip = false
 App.mpType = 'app'

@@ -676,7 +676,6 @@
 		}
 
 		.top-content {
-			width: 610rpx;
 			background-color: #ffffff;
 			margin: 30rpx;
 			border-radius: 50rpx;

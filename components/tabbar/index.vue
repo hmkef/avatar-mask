@@ -9,6 +9,9 @@
 				<u-tabbar-item name="cover" text="领取"
 					:icon="name=='cover'?'/static/ui/tabbar/cover-icon-select.png':'/static/ui/tabbar/cover-icon.png'"
 					@click="onClickItem"></u-tabbar-item>
+				<u-tabbar-item name="mask" text="口罩"
+					:icon="name=='mask'?'/static/ui/tabbar/mask-on.png':'/static/ui/tabbar/mask-off.png'"
+					@click="onClickItem"></u-tabbar-item>
 				<u-tabbar-item name="me" text="我的"
 					:icon="name=='me'?'/static/ui/tabbar/me-select-02.png':'/static/ui/tabbar/me.png'"
 					@click="onClickItem"></u-tabbar-item>
@@ -42,6 +45,11 @@
 						uni.reLaunch({
 							url: '/pages/cover/index'
 						});
+						break;
+					case 'mask':
+							uni.reLaunch({
+								url: '/pages/mask/add-mask'
+							});
 						break;
 					case 'me':
 						uni.reLaunch({

@@ -61,6 +61,20 @@
 				"enablePullDownRefresh": false
 			}
 
+		},{
+			"path": "pages/mask/add-mask",
+			"style": {
+				// "navigationBarBackgroundColor": "#C12928",
+				"disableScroll": true,
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/mask/save-done",
+			"style": {
+				"disableScroll": true,
+				"navigationBarTitleText": " 保存成功"
+			}
 		}
 	],
 	"globalStyle": {
