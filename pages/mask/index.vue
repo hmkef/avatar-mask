@@ -15,8 +15,8 @@
 			<!-- <icon type="cancel" class="cancel" id="cancel" :style="{top:cancelCenterY-10 + 'px', left:cancelCenterX-10 + 'px'}"></icon> -->
 			<!-- <icon type="waiting" class="handle" id="handle" color="green" :style="{top:handleCenterY-10 + 'px', left:handleCenterX-10 +'px'}"></icon> -->
 			<!-- <text class="cuIcon-order cancel circle" @click="flipHorizontal" id="cancel" :style="{top:cancelCenterY-10 + 'px', left:cancelterX-10 +'px'}"></text> -->
-			<image v-if="currentMaskId > -1" class="mask flip-horizontal" :class="{maskWithBorder: showBorder}"
-				id='mask' :src="maskPic" :style="{top:maskCenterY-maskSize/2-2+'px', left:maskCenterX-maskSize/2-2+'px',
+			<image v-if="currentImage" class="mask flip-horizontal" :class="{maskWithBorder: showBorder}" id='mask'
+				:src="maskPic" :style="{top:maskCenterY-maskSize/2-2+'px', left:maskCenterX-maskSize/2-2+'px',
 				transform: 'rotate(' +rotate+ 'deg)' + 'scale(' +scale+')' + 'rotateY('+ rotateY +'deg)'}"></image>
 			<text class="cuIcon-full handle circle" :class="{hideHandle: !showBorder}" id="handle"
 				:style="{top:handleCenterY-10 + 'px', left:handleCenterX-10 +'px'}"></text>
@@ -29,9 +29,9 @@
 				style="height:270px;width:270px;margin-left: auto;margin-right: auto;" />
 		</view>
 		<view class="flex-sub text-center">
-			<view class="solid-bottom">
-				<text class="text-yellow text-bold">戴上口罩 远离病毒 从你我做起</text>
-			</view>
+			<!-- <view class="solid-bottom"> -->
+			<text class="text-yellow text-bold">戴上口罩 远离病毒 从你我做起</text>
+			<!-- </view> -->
 		</view>
 		<view class="grid justify-around action-wrapper">
 			<view class="grid col-1">
@@ -41,10 +41,6 @@
 				<button class="cu-btn round action-btn bg-yellow shadow" v-else open-type="getUserInfo"
 					@click="getUserProfile('createImages')">获取头像</button>
 
-				<!-- 		
-				
-				<button id="btn-my-avatar" class="cu-btn round action-btn bg-yellow shadow " open-type="getUserInfo"
-					@click="getUserInfoCallBack">获取头像</button> -->
 			</view>
 			<view class="grid col-2">
 				<button id="btn-save" class="cu-btn round action-btn bg-yellow shadow" @click="draw">
@@ -52,32 +48,46 @@
 					</text>保存头像
 				</button>
 			</view>
-			<!-- 		<view class="grid col-3">
-				<button id="btn-choose-img" class="cu-btn round action-btn bg-yellow shadow" @click="chooseImage">选择图片</button>
-			</view> -->
+			<view class="grid col-3">
+				<button id="btn-choose-img" class="cu-btn round action-btn bg-yellow shadow" open-type="share">分享</button>
+				<!-- <button id="btn-choose-img" class="cu-btn round action-btn bg-yellow shadow" @click="chooseImage">选择图片</button> -->
+			</view>
 		</view>
-<!-- 		<view class="grid justify-around share-wrapper">
+		<!-- 		<view class="grid justify-around share-wrapper">
 			<view class="grid col-2 animation-shake animation-speed-2 animation-delay-3">
 				<button class="cu-btn block line-orange lg share-btn" open-type="share">
 					<text class="cuIcon-upload"></text> <text class="text-yellow">分享给好友</text> </button>
 			</view>
 		</view> -->
-		
+
+		<view class="top-content">
+			<scroll-view scroll-x :show-scrollbar="false" class="scroll-view">
+				<view class="top-title">
+					<view class="title-unit" :class="{ 'title-select': item.selected }"
+						v-for="(item, index) in category" :key="item.category_id" @click="switchCategory(item)">
+						{{ item.title }}
+					</view>
+				</view>
+			</scroll-view>
+			<scroll-view scroll-x :show-scrollbar="false" class="scroll-view">
+				<view class="image-div" v-if="imageList.length">
+					<view :class="{ 'image-margin': index !== 0 }" v-for="(info, index) in imageList"
+						:key="info.pendant_id" @click="imageClick(info)">
+						<image :src="info.image.file_path" :data-mask-id="index" @tap="changeMask"></image>
+					</view>
+				</view>
+				<view class="image-div empty-cover" v-else>
+					<u-empty width="41" height="41" text="暂无可用挂件" mode="list"
+						icon="http://cdn.uviewui.com/uview/empty/data.png">
+					</u-empty>
+				</view>
+			</scroll-view>
+		</view>
+
 		<!-- banner广告 -->
 		<view class="ad">
 			<ad unit-id="adunit-4a966611638c84c0"></ad>
 		</view>
-		
-		<scroll-view class="scrollView mask-scroll-view" scroll-x="true">
-			<view v-for="(item,index) in imgList" :key="index" style="display: inline-flex;">
-				<text v-if="currentMaskId == index && isAndroid" class="cuIcon-order cancel circle"
-					@click="flipHorizontal" id="cancel" :style="{transform: 'rotate(' +90+ 'deg)'}"></text>
-				<text v-if="currentMaskId == index" style="margin-left: 55px;" class="cuIcon-question cancel circle"
-					@click="showTips" id="cancel"></text>
-				<image class="imgList" :src="'/static/images/mask/'+ index +'.png'" :data-mask-id="index"
-					@tap="changeMask"></image>
-			</view>
-		</scroll-view>
 
 		<view class="cu-modal" :class="modalName=='saveTip'?'show':''">
 			<view class="cu-dialog">
@@ -95,7 +105,7 @@
 					通风也要紧，疾病无踪影。
 				</view>
 				<view class="padding">
-					祝大家平安过节！戴口罩，勤洗手，早睡早起，健康美丽！
+					特殊时期：戴口罩，勤洗手，早睡早起，健康美丽！
 				</view>
 				<view class="cu-bar bg-white justify-end">
 					<view class="action">
@@ -117,6 +127,11 @@
 
 	import tabbar from '@/components/tabbar/index.vue';
 	import addTips from "@/components/add-tips";
+
+	import {
+		category,
+		frame
+	} from '@/api/pendant.js';
 
 	// 在页面中定义激励视频广告
 	let videoAd = null;
@@ -145,8 +160,7 @@
 				cansWidth: 270, // 宽度 px
 				cansHeight: 270, // 高度 px
 				avatarPath: '/static/images/mask/avatar_mask.png',
-				imgList: range(0, 29, 1), // 第二个参数是个数
-				currentMaskId: -1,
+
 				showBorder: false,
 				maskCenterX: wx.getSystemInfoSync().windowWidth / 2,
 				maskCenterY: 250,
@@ -155,6 +169,13 @@
 				handleCenterX: wx.getSystemInfoSync().windowWidth / 2 + 50 - 2,
 				handleCenterY: 300,
 				userInfo: '',
+
+				currentImage: {},
+				currentIndex: 0,
+				imageList: [],
+				categoriesList: [],
+				category: [],
+				tempChoseImage: '',
 
 				maskSize: 100,
 				scale: 1,
@@ -178,8 +199,10 @@
 			// 	userInfo: 'userInfo'
 			// }),
 			maskPic: function() {
-				return '/static/images/mask/' + this.currentMaskId + '.png';
-			}
+				console.log("maskPic", this.tempChoseImage)
+				return this.tempChoseImage;
+			},
+
 		},
 		onLoad(option) {
 			this.windowHeight = getApp().globalData.windowHeight;
@@ -188,6 +211,8 @@
 			}
 
 			let _this = this;
+
+			_this.getCategoriesList();
 
 			// 在页面onLoad回调事件中创建插屏广告实例
 			if (wx.createInterstitialAd) {
@@ -204,7 +229,7 @@
 			// 在页面onLoad回调事件中创建激励视频广告实例
 			if (wx.createRewardedVideoAd) {
 				videoAd = wx.createRewardedVideoAd({
-					// adUnitId: 'adunit-b533f35159d5f861'
+					adUnitId: 'adunit-b533f35159d5f861'
 				})
 				videoAd.onLoad(() => {
 					_this.rewardedVideoAdLoaded = true;
@@ -265,10 +290,10 @@
 		},
 		onShareAppMessage() {
 			return {
-				title: '我换上了口罩头像，防止疫情蔓延，30款口罩、护目镜任你选！',
-				desc: '防传染、戴口罩，从我做起！',
-				imageUrl: '/static/images/mask/avatar_mask.png',
-				path: '/pages/cover/index',
+				title: '我换上了新的挂件，多款样式任你选！联系在线客服可进行定制^_^',
+				desc: '个性专属头像挂件,你也来试试吧',
+				imageUrl: this.avatarPath,
+				path: '/pages/mask/index',
 				success: function(res) {
 					console.log(res);
 				}
@@ -367,38 +392,7 @@
 						if (type === 'createImages') {
 							_this.avatarImage = info.substring(0, info.lastIndexOf('/') + 1) + '0';
 							uni.setStorageSync('avatar_image', _this.avatarImage);
-						}
-					},
-					fail(fall) {}
-				});
-			},
-
-			/**
-			 *  获取用户信息回调方法
-			 * @param {Object} type
-			 */
-			async getUserProfile(type) {
-				console.log('mpGetUserInfo', type);
-
-				let _this = this;
-				uni.getUserProfile({
-					desc: '获取您的头像信息',
-					success(result) {
-						console.log('result', result);
-						let data = {
-							code: _this.code,
-							signature: result.signature,
-							encrypted_data: result.encryptedData,
-							iv: result.iv,
-							userInfo: result.userInfo
-						};
-
-						let info = data.userInfo.avatarUrl;
-						if (type === 'createImages') {
-							_this.avatarImage = info.substring(0, info.lastIndexOf('/') + 1) + '0';
-							uni.setStorageSync('avatar_image', _this.avatarImage);
 							getApp().globalData.userAvatarUrl = _this.avatarImage;
-
 
 							uni.downloadFile({
 								url: _this.avatarImage,
@@ -415,20 +409,133 @@
 										content: '检查网络，点击确定重新加载',
 										success(res) {
 											if (res.confirm) {
-												_this.downloadAvatarAndPaintAll(imageUrl);
+												// _this.downloadAvatarAndPaintAll(imageUrl);
 											} else if (res.cancel) {
 												console.log('用户点击取消');
 											}
 										}
 									})
+
 								}
 							})
-
 						}
 					},
 					fail(fall) {}
 				});
+			},
 
+			/**
+			 * 获取分类
+			 */
+			getCategoriesList() {
+				let _this = this
+				uni.showLoading({
+					title: '加载中',
+					mask: true
+				});
+				category({}).then(res => {
+					uni.hideLoading();
+					_this.category = res.category
+					if (_this.category.length > 0) {
+						_this.$set(_this.category[0], 'selected', true);
+						_this.getImagesList(_this.category[0].category_id);
+					} else {
+						_this.category = []
+					}
+				}).catch(err => {
+					uni.hideLoading();
+				})
+			},
+			/**
+			 * @param {Object} id
+			 * 获取挂件
+			 */
+			getImagesList(id, num) {
+				let _this = this
+				uni.showLoading({
+					title: '加载中',
+					mask: true
+				});
+				frame({
+					category_id: id
+				}).then(res => {
+					_this.imageList = res.pendant.data;
+					if (num < 0) {
+						_this.currentImage = _this.imageList[_this.imageList.length - 1];
+					} else {
+						_this.currentImage = _this.imageList[0];
+					}
+					uni.hideLoading();
+				}).catch(err => {
+					uni.hideLoading();
+				})
+			},
+			/**
+			 * @param {Object} item
+			 * 切换分类
+			 */
+			switchCategory(item, num) {
+				let _this = this
+				let info = _this.category.filter(el => el.selected);
+				if (info && info.length > 0) {
+					info[0].selected = false;
+				}
+				_this.$set(item, 'selected', true);
+				_this.getImagesList(item.category_id, num);
+			},
+			/**
+			 * @param {Object} num
+			 * 切换图片
+			 */
+			switchAvatar(num) {
+				AD.interstitial.show();
+				let currentIndex = this.imageList.findIndex(el => el._id === this.currentImage._id);
+				if ((num > 0 && currentIndex < this.imageList.length - 1) || (num < 0 && currentIndex > 0)) {
+					currentIndex += num;
+					this.currentImage = this.imageList[currentIndex];
+				} else {
+					let currentType = this.category.findIndex(data => data.selected);
+					currentType += num;
+					if (this.category[currentType] && this.category[currentType]._id) {
+						this.switchCategory(this.category[currentType], num);
+					}
+				}
+			},
+			/**
+			 * @param {Object} item
+			 * 图片点击事件
+			 */
+			imageClick(item) {
+				this.currentImage = item;
+				uni.showLoading({
+					title: '加载中',
+					mask: true
+				});
+				let _this = this;
+				uni.downloadFile({
+					url: item.image.file_path,
+					success: function(res) {
+						uni.hideLoading();
+						_this.tempChoseImage = res.tempFilePath;
+						// getApp().globalData.userAvatarFilePath = res.tempFilePath;
+					},
+					fail: function(e) {
+						console.log(e);
+						uni.hideLoading();
+						uni.showModal({
+							title: '图片加载超时',
+							content: '检查网络，点击确定重新加载',
+							success(res) {
+								if (res.confirm) {
+									// _this.downloadAvatarAndPaintAll(imageUrl);
+								} else if (res.cancel) {
+									console.log('用户点击取消');
+								}
+							}
+						})
+
+					}
+				})
 			},
 
 			/**
@@ -470,10 +577,18 @@
 				});
 			},
 			changeMask(e) {
-				this.currentMaskId = e.target.dataset.maskId;
+				// this.currentMaskId = e.target.dataset.maskId;
 				this.showBorder = true;
 			},
 			draw() {
+				if (!this.avatarImage) {
+					uni.showToast({
+						title: '请先获取头像',
+						icon: 'none'
+					});
+					return;
+				}
+
 				let scale = this.scale;
 				let rotate = this.rotate;
 				let mask_center_x = this.mask_center_x;
@@ -501,8 +616,8 @@
 					pc.drawImage(_this.maskPic, -mask_size / 2, -mask_size / 2, mask_size, mask_size);
 					pc.draw();
 
-					// 有成功加载的激励视频，才展现提示框
-					if (!!videoAd && _this.rewardedVideoAdLoaded) {
+					// 有成功加载的激励视频，才展现提示框  前两次不弹广告
+					if (!!videoAd && _this.rewardedVideoAdLoaded && _this.savedCounts > 2) {
 						uni.showModal({
 							title: '获取无限制使用',
 							content: '观看完视频可以自动保存哦',
@@ -534,6 +649,7 @@
 					} else {
 						_this.saveCans();
 					}
+
 				})
 			},
 			flipHorizontal() {
@@ -558,6 +674,7 @@
 					canvasId: 'cans-id-mask',
 					success: function(res) {
 						uni.hideLoading();
+
 						getApp().globalData.maskAvatarSavedTempPath = res.tempFilePath;
 						uni.saveImageToPhotosAlbum({
 							filePath: res.tempFilePath,
@@ -796,8 +913,60 @@
 		width: 750rpx;
 		height: 1600rpx;
 	}
-	
+
+	.empty-cover {
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+	}
+
 	.ad {
-		margin: 100rpx 0rpx;
+		margin: 50rpx 0rpx;
+	}
+
+	.top-content {
+		background-color: #ffffff;
+		margin: 30rpx;
+		border-radius: 50rpx;
+		padding: 0 40rpx 30rpx;
+		position: relative;
+
+		.top-title {
+			display: flex;
+			align-items: center;
+			white-space: nowrap;
+
+			.title-unit {
+				padding: 40rpx 20rpx;
+				font-size: 30rpx;
+			}
+
+			.title-select {
+				font-size: 30rpx;
+				font-weight: bold;
+				color: #ff4500;
+			}
+		}
+
+		.image-div {
+			display: flex;
+			align-items: center;
+			padding-left: 20rpx;
+			padding-bottom: 20rpx;
+			background-color: #ffffff;
+
+			image {
+				width: 120rpx;
+				height: 120rpx;
+				border: 1rpx solid #f8f8f8;
+				box-shadow: 0px -5px 15px 0px rgba(224, 224, 224, 0.4);
+				flex-shrink: 0;
+			}
+
+			.image-margin {
+				margin: 0 20rpx;
+			}
+		}
 	}
 </style>

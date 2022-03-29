@@ -48,7 +48,7 @@
 						break;
 					case 'mask':
 							uni.reLaunch({
-								url: '/pages/mask/add-mask'
+								url: '/pages/mask/index'
 							});
 						break;
 					case 'me':

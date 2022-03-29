@@ -16,7 +16,7 @@
 		</view>
 		<view class="btn-group">
 			<view class="btn">
-				<u-button shape="circle" type="primary" @getuserinfo="getuserinfo" openType="getUserInfo" text="授权登录">
+				<u-button shape="circle" type="primary" @click="getuserinfo" openType="getUserInfo" text="授权登录">
 				</u-button>
 			</view>
 			<view class="btn">
@@ -42,13 +42,18 @@
 				uni.navigateBack({})
 			},
 			getuserinfo(e) {
+				
+				uni.getUserProfile({
+					desc: '获取您的头像信息',
+					success(result) {
+		
 				uni.login({
 					provider: 'weixin',
 					success: function(loginRes) {
 						login({
 							referee_id: uni.getStorageSync("referee_id"),
 							code: loginRes.code,
-							user_info: e.detail.userInfo
+							user_info: result.userInfo
 						}).then(res => {
 							uni.$u.toast("登录成功")
 							uni.setStorageSync('token', res.token);
@@ -61,6 +66,13 @@
 						})
 					}
 				});
+				
+				
+						
+					},
+					fail(fall) {}
+				});
+				
 			}
 		}
 	}
