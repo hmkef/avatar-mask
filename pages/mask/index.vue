@@ -11,16 +11,23 @@
 			@touchend="touchEnd" @touchmove="touchMove">
 			<view class="avatar-bg-border">
 				<image @touchstart="touchAvatarBg" class="bg avatar-bg" id="avatar-bg" :src="avatarPath"></image>
+				<view v-if="!avatarPath">
+					<image class="bg avatar-bg"
+						src="/static/images/mask/avatar_mask.png">
+					</image>
+				</view>
 			</view>
-			<!-- <icon type="cancel" class="cancel" id="cancel" :style="{top:cancelCenterY-10 + 'px', left:cancelCenterX-10 + 'px'}"></icon> -->
+			
+			<!-- <icon type="cancel" class="cancel" id="cancel" :style="{top:cancelCenterY-10 + 'px', left:cancelCenterX-10 + 'px'}"></icon> --> -->
 			<!-- <icon type="waiting" class="handle" id="handle" color="green" :style="{top:handleCenterY-10 + 'px', left:handleCenterX-10 +'px'}"></icon> -->
 			<!-- <text class="cuIcon-order cancel circle" @click="flipHorizontal" id="cancel" :style="{top:cancelCenterY-10 + 'px', left:cancelterX-10 +'px'}"></text> -->
+			
 			<image v-if="currentImage" class="mask flip-horizontal" :class="{maskWithBorder: showBorder}" id='mask'
 				:src="maskPic" :style="{top:maskCenterY-maskSize/2-2+'px', left:maskCenterX-maskSize/2-2+'px',
 				transform: 'rotate(' +rotate+ 'deg)' + 'scale(' +scale+')' + 'rotateY('+ rotateY +'deg)'}"></image>
 			<text class="cuIcon-full handle circle" :class="{hideHandle: !showBorder}" id="handle"
 				:style="{top:handleCenterY-10 + 'px', left:handleCenterX-10 +'px'}"></text>
-			<text class="cuIcon-order cancel circle" v-if="isAndroid" :class="{hideHandle: !showBorder}" id="cancel"
+			<text class="cuIcon-order cancel circle" :class="{hideHandle: !showBorder}" id="cancel"
 				@click="flipHorizontal"
 				:style="{top:cancelCenterY-10 + 'px', left:cancelCenterX-10 +'px', transform: 'rotate(' +90+ 'deg)'}"></text>
 		</view>
@@ -29,8 +36,8 @@
 				style="height:270px;width:270px;margin-left: auto;margin-right: auto;" />
 		</view>
 		<view class="flex-sub text-center">
-			<!-- <view class="solid-bottom"> -->
-			<text class="text-yellow text-bold">戴上口罩 远离病毒 从你我做起</text>
+			<!-- <view class="solid-bottom">
+			<text class="text-yellow text-bold">点击挂件可进行拖拽缩放操作</text>
 			<!-- </view> -->
 		</view>
 		<view class="grid justify-around action-wrapper">
@@ -45,11 +52,12 @@
 			<view class="grid col-2">
 				<button id="btn-save" class="cu-btn round action-btn bg-yellow shadow" @click="draw">
 					<!-- <text class="cuIcon-down"> -->
-					</text>保存头像
+					</text>生成保存
 				</button>
 			</view>
 			<view class="grid col-3">
-				<button id="btn-choose-img" class="cu-btn round action-btn bg-yellow shadow" open-type="share">分享</button>
+				<button id="btn-choose-img" class="cu-btn round action-btn bg-yellow shadow"
+					open-type="share">分享</button>
 				<!-- <button id="btn-choose-img" class="cu-btn round action-btn bg-yellow shadow" @click="chooseImage">选择图片</button> -->
 			</view>
 		</view>
@@ -85,8 +93,8 @@
 		</view>
 
 		<!-- banner广告 -->
-		<view class="ad">
-			<ad unit-id="adunit-4a966611638c84c0"></ad>
+		<view class="ad" v-if="inspire.banner_ad">
+			<ad :unit-id="inspire.banner_ad"></ad>
 		</view>
 
 		<view class="cu-modal" :class="modalName=='saveTip'?'show':''">
@@ -133,10 +141,16 @@
 		frame
 	} from '@/api/pendant.js';
 
+	import AD from "@/utils/ad.js"
+
+	import {
+		store
+	} from '@/api/app.js';
+
 	// 在页面中定义激励视频广告
-	let videoAd = null;
+	// let videoAd = null;
 	// 在页面中定义插屏广告
-	let interstitialAd = null
+	// let interstitialAd = null
 
 	const range = (start, end, step) => {
 		return Array.from(Array.from(Array(Math.ceil((end - start) / step)).keys()), x => start + x * step);
@@ -159,7 +173,7 @@
 				savedCounts: 0,
 				cansWidth: 270, // 宽度 px
 				cansHeight: 270, // 高度 px
-				avatarPath: '/static/images/mask/avatar_mask.png',
+				avatarPath: getApp().globalData.userAvatarFilePath,//本地缓存头像
 
 				showBorder: false,
 				maskCenterX: wx.getSystemInfoSync().windowWidth / 2,
@@ -176,6 +190,8 @@
 				categoriesList: [],
 				category: [],
 				tempChoseImage: '',
+				inspire: [],
+				store: [],
 
 				maskSize: 100,
 				scale: 1,
@@ -206,53 +222,12 @@
 		},
 		onLoad(option) {
 			this.windowHeight = getApp().globalData.windowHeight;
-			if (!!getApp().globalData.userAvatarFilePath) {
-				this.avatarPath = getApp().globalData.userAvatarFilePath;
-			}
+			// if (!!getApp().globalData.userAvatarFilePath) {
+			// 	this.avatarPath = getApp().globalData.userAvatarFilePath;
+			// }
 
-			let _this = this;
-
-			_this.getCategoriesList();
-
-			// 在页面onLoad回调事件中创建插屏广告实例
-			if (wx.createInterstitialAd) {
-				interstitialAd = wx.createInterstitialAd({
-					adUnitId: 'adunit-0cbac0ce33c0dc5e'
-				})
-				interstitialAd.onLoad(() => {})
-				interstitialAd.onError((err) => {
-					console.log(err);
-				})
-				interstitialAd.onClose(() => {})
-			}
-
-			// 在页面onLoad回调事件中创建激励视频广告实例
-			if (wx.createRewardedVideoAd) {
-				videoAd = wx.createRewardedVideoAd({
-					adUnitId: 'adunit-b533f35159d5f861'
-				})
-				videoAd.onLoad(() => {
-					_this.rewardedVideoAdLoaded = true;
-				})
-				videoAd.onError((err) => {
-					// 广告组件出现错误，直接允许用户保存，不做其他复杂处理
-					_this.rewardedVideoAdLoaded = false;
-				})
-				videoAd.onClose((res) => {
-					if (res && res.isEnded || res === undefined) {
-						// 正常播放结束，下发奖励
-						_this.rewardedVideoAdAlreadyShow = true; // 本次使用不再展现激励广告
-						_this.saveCans();
-					} else {
-						// 播放中途退出，进行提示
-						_this.rewardedVideoAdAlreadyShow = false;
-						uni.showToast({
-							title: '请完整观看哦'
-						})
-					}
-
-				})
-			}
+			this.getStore()
+			this.getCategoriesList();
 		},
 		onReady() {
 			// 判断是否已经显示过
@@ -275,22 +250,16 @@
 		onShow() {
 			console.log("onShow");
 
-			// 在适合的场景显示插屏广告
-			if (interstitialAd) {
-				interstitialAd.show().catch((err) => {
-					console.error(err)
-				})
-			}
-
 			if (getApp().globalData.rapaintAfterCrop) {
 				getApp().globalData.rapaintAfterCrop = false;
 				this.avatarPath = getApp().globalData.cropImageFilePath;
 				this.paint();
 			}
+
 		},
 		onShareAppMessage() {
 			return {
-				title: '我换上了新的挂件，多款样式任你选！联系在线客服可进行定制^_^',
+				title: '我换上了新的挂件，多款样式任你选！还可以联系客服进行定制^_^',
 				desc: '个性专属头像挂件,你也来试试吧',
 				imageUrl: this.avatarPath,
 				path: '/pages/mask/index',
@@ -370,8 +339,6 @@
 				this.start_y = current_y;
 			},
 
-
-
 			/**
 			 * @param {Object} type
 			 * 获取头像
@@ -392,7 +359,7 @@
 						if (type === 'createImages') {
 							_this.avatarImage = info.substring(0, info.lastIndexOf('/') + 1) + '0';
 							uni.setStorageSync('avatar_image', _this.avatarImage);
-							getApp().globalData.userAvatarUrl = _this.avatarImage;
+							// getApp().globalData.userAvatarUrl = _this.avatarImage;
 
 							uni.downloadFile({
 								url: _this.avatarImage,
@@ -409,7 +376,7 @@
 										content: '检查网络，点击确定重新加载',
 										success(res) {
 											if (res.confirm) {
-												// _this.downloadAvatarAndPaintAll(imageUrl);
+												_this.getUserProfile(type);
 											} else if (res.cancel) {
 												console.log('用户点击取消');
 											}
@@ -424,17 +391,42 @@
 				});
 			},
 
+			async getStore() {
+				let _this = this
+				await store({}).then(res => {
+					_this.store = res.store
+					_this.inspire = res.inspire
+
+					if (res.inspire.ins_ad) {
+						AD.interstitial.load(res.inspire.ins_ad)
+						setTimeout(() => {
+							AD.interstitial.show();
+						}, 1500)
+					}
+
+					setTimeout(() => {
+						AD.rewarded.load(_this.inspire.rew_ad, () => {
+							//这里写你的任意奖励事件
+							_this.saveCans();
+						});
+					}, 3000)
+
+				}).catch(err => {
+					console.log(err)
+				})
+			},
+
 			/**
 			 * 获取分类
 			 */
 			getCategoriesList() {
 				let _this = this
-				uni.showLoading({
-					title: '加载中',
-					mask: true
-				});
+				// uni.showLoading({
+				// 	title: '加载中',
+				// 	mask: true
+				// });
 				category({}).then(res => {
-					uni.hideLoading();
+					// uni.hideLoading();
 					_this.category = res.category
 					if (_this.category.length > 0) {
 						_this.$set(_this.category[0], 'selected', true);
@@ -517,17 +509,16 @@
 					success: function(res) {
 						uni.hideLoading();
 						_this.tempChoseImage = res.tempFilePath;
-						// getApp().globalData.userAvatarFilePath = res.tempFilePath;
 					},
 					fail: function(e) {
 						console.log(e);
 						uni.hideLoading();
 						uni.showModal({
 							title: '图片加载超时',
-							content: '检查网络，点击确定重新加载',
+							content: '请检查网络，点击确定重新加载',
 							success(res) {
 								if (res.confirm) {
-									// _this.downloadAvatarAndPaintAll(imageUrl);
+									_this.imageClick(item);
 								} else if (res.cancel) {
 									console.log('用户点击取消');
 								}
@@ -581,7 +572,7 @@
 				this.showBorder = true;
 			},
 			draw() {
-				if (!this.avatarImage) {
+				if (!this.avatarPath) {
 					uni.showToast({
 						title: '请先获取头像',
 						icon: 'none'
@@ -616,8 +607,8 @@
 					pc.drawImage(_this.maskPic, -mask_size / 2, -mask_size / 2, mask_size, mask_size);
 					pc.draw();
 
-					// 有成功加载的激励视频，才展现提示框  前两次不弹广告
-					if (!!videoAd && _this.rewardedVideoAdLoaded && _this.savedCounts > 2) {
+					// 有成功加载的激励视频，才展现提示框
+					if (_this.inspire.rew_ad && _this.savedCounts > 2) {
 						uni.showModal({
 							title: '获取无限制使用',
 							content: '观看完视频可以自动保存哦',
@@ -625,31 +616,15 @@
 								if (res.confirm) {
 									console.log('用户点击确定');
 									// 用户触发广告后，显示激励视频广告
-									if (videoAd) {
-										_this.rewardedVideoAdAlreadyShow = true;
-										videoAd.show().catch(() => {
-											// 失败重试
-											videoAd.load()
-												.then(() => {
-													videoAd.show();
-												})
-												.catch(err => {
-													console.log(err);
-													console.log('激励视频 广告显示失败')
-												})
-										})
-									}
+									AD.rewarded.show();
 								} else if (res.cancel) {
 									console.log('用户点击取消');
-									_this.saveCans();
-									return;
 								}
 							}
 						});
 					} else {
 						_this.saveCans();
 					}
-
 				})
 			},
 			flipHorizontal() {
@@ -926,7 +901,7 @@
 	}
 
 	.top-content {
-		background-color: #ffffff;
+		background-color: #f8f8f8;
 		margin: 30rpx;
 		border-radius: 50rpx;
 		padding: 0 40rpx 30rpx;
@@ -954,14 +929,15 @@
 			align-items: center;
 			padding-left: 20rpx;
 			padding-bottom: 20rpx;
-			background-color: #ffffff;
+			background-color: #f8f8f8;
 
 			image {
 				width: 120rpx;
 				height: 120rpx;
-				border: 1rpx solid #f8f8f8;
-				box-shadow: 0px -5px 15px 0px rgba(224, 224, 224, 0.4);
+				border: 1rpx solid #ffffff;
+				box-shadow: 0px -5px 15px 0px rgba(224, 224, 224, 0.6);
 				flex-shrink: 0;
+				border-radius: 5px;
 			}
 
 			.image-margin {

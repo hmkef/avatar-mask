@@ -6,10 +6,10 @@
 				<u-tabbar-item name="avatar" text="首页"
 					:icon="name=='avatar'?'/static/ui/tabbar/home-select-02.png':'/static/ui/tabbar/home.png'"
 					@click="onClickItem"></u-tabbar-item>
-				<u-tabbar-item name="cover" text="领取"
+				<u-tabbar-item name="cover" text="封面"
 					:icon="name=='cover'?'/static/ui/tabbar/cover-icon-select.png':'/static/ui/tabbar/cover-icon.png'"
 					@click="onClickItem"></u-tabbar-item>
-				<u-tabbar-item name="mask" text="口罩"
+				<u-tabbar-item name="mask" text="挂件"
 					:icon="name=='mask'?'/static/ui/tabbar/mask-on.png':'/static/ui/tabbar/mask-off.png'"
 					@click="onClickItem"></u-tabbar-item>
 				<u-tabbar-item name="me" text="我的"
