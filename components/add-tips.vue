@@ -49,7 +49,7 @@
 			// 提示文字
 			text: {
 				type: String,
-				default: '点击「添加小程序」，下次访问更便捷 >'
+				default: '点击「添加小程序」，下次访问更便捷'
 			},
 			// 多少秒后关闭
 			duration: {
@@ -85,15 +85,16 @@
 <style>
 	.box {
 		position: fixed;
-		/* top: 50px; */
-		/* left: 0; */
-		right: 0;
-		z-index: 999;
+		top: CustomBar + 20rpx;
+		right: -20rpx;
+		z-index: 99999;
+		opacity: 0.8;
 		display: flex;
 		justify-content: flex-end;
 		align-items: flex-end;
 		flex-direction: column;
-		width: 600rpx;
+		width: 600upx;
+		animation: opacityC 1s linear infinite;
 	}
 
 	.arrow {
@@ -179,6 +180,11 @@
 
 	.btn-hover {
 		opacity: 0.6;
+	}
+	
+	@keyframes opacityC{
+		0%{opacity: 0.8;}
+		50%{opacity: 1;}
 	}
 	
 </style>

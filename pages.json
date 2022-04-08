@@ -65,6 +65,21 @@
 			"path": "pages/mask/index",
 			"style": {
 				// "navigationBarBackgroundColor": "#C12928",
+				// "disableScroll": true,
+				"navigationStyle": "custom"
+			}
+		},{
+			"path": "pages/text/index",
+			"style": {
+				"navigationBarTitleText": "头像加文字",
+				"navigationBarTextStyle": "white",
+				"navigationBarBackgroundColor": "#C12928"
+				// "disableScroll": true,
+				// "navigationStyle": "custom"
+			}
+		},{
+			"path": "pages/crop/crop",
+			"style": {
 				"disableScroll": true,
 				"navigationStyle": "custom"
 			}

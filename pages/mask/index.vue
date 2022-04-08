@@ -12,16 +12,15 @@
 			<view class="avatar-bg-border">
 				<image @touchstart="touchAvatarBg" class="bg avatar-bg" id="avatar-bg" :src="avatarPath"></image>
 				<view v-if="!avatarPath">
-					<image class="bg avatar-bg"
-						src="/static/images/mask/avatar_mask.png">
+					<image class="bg avatar-bg" src="/static/images/mask/avatar_mask.png">
 					</image>
 				</view>
 			</view>
-			
-			<!-- <icon type="cancel" class="cancel" id="cancel" :style="{top:cancelCenterY-10 + 'px', left:cancelCenterX-10 + 'px'}"></icon> --> -->
+
+			<!-- <icon type="cancel" class="cancel" id="cancel" :style="{top:cancelCenterY-10 + 'px', left:cancelCenterX-10 + 'px'}"></icon> -->
 			<!-- <icon type="waiting" class="handle" id="handle" color="green" :style="{top:handleCenterY-10 + 'px', left:handleCenterX-10 +'px'}"></icon> -->
 			<!-- <text class="cuIcon-order cancel circle" @click="flipHorizontal" id="cancel" :style="{top:cancelCenterY-10 + 'px', left:cancelterX-10 +'px'}"></text> -->
-			
+
 			<image v-if="currentImage" class="mask flip-horizontal" :class="{maskWithBorder: showBorder}" id='mask'
 				:src="maskPic" :style="{top:maskCenterY-maskSize/2-2+'px', left:maskCenterX-maskSize/2-2+'px',
 				transform: 'rotate(' +rotate+ 'deg)' + 'scale(' +scale+')' + 'rotateY('+ rotateY +'deg)'}"></image>
@@ -36,7 +35,7 @@
 				style="height:270px;width:270px;margin-left: auto;margin-right: auto;" />
 		</view>
 		<view class="flex-sub text-center">
-			<!-- <view class="solid-bottom">
+			<!-- <view class="solid-bottom"> -->
 			<text class="text-yellow text-bold">点击挂件可进行拖拽缩放操作</text>
 			<!-- </view> -->
 		</view>
@@ -56,17 +55,18 @@
 				</button>
 			</view>
 			<view class="grid col-3">
+				<!-- 	<button id="btn-choose-img" class="cu-btn round action-btn bg-yellow shadow"
+					open-type="share">分享</button> -->
 				<button id="btn-choose-img" class="cu-btn round action-btn bg-yellow shadow"
-					open-type="share">分享</button>
-				<!-- <button id="btn-choose-img" class="cu-btn round action-btn bg-yellow shadow" @click="chooseImage">选择图片</button> -->
+					@click="chooseImage">选择图片</button>
 			</view>
 		</view>
-		<!-- 		<view class="grid justify-around share-wrapper">
+		<view class="grid justify-around share-wrapper">
 			<view class="grid col-2 animation-shake animation-speed-2 animation-delay-3">
 				<button class="cu-btn block line-orange lg share-btn" open-type="share">
 					<text class="cuIcon-upload"></text> <text class="text-yellow">分享给好友</text> </button>
 			</view>
-		</view> -->
+		</view>
 
 		<view class="top-content">
 			<scroll-view scroll-x :show-scrollbar="false" class="scroll-view">
@@ -171,9 +171,10 @@
 				isAndroid: getApp().globalData.IS_ANDROID,
 				modalName: null,
 				savedCounts: 0,
+				freeCount: 1,
 				cansWidth: 270, // 宽度 px
 				cansHeight: 270, // 高度 px
-				avatarPath: getApp().globalData.userAvatarFilePath,//本地缓存头像
+				avatarPath: getApp().globalData.userAvatarFilePath, //本地缓存头像
 
 				showBorder: false,
 				maskCenterX: wx.getSystemInfoSync().windowWidth / 2,
@@ -608,7 +609,7 @@
 					pc.draw();
 
 					// 有成功加载的激励视频，才展现提示框
-					if (_this.inspire.rew_ad && _this.savedCounts > 2) {
+					if (_this.inspire.rew_ad && _this.savedCounts >= this.freeCount) {
 						uni.showModal({
 							title: '获取无限制使用',
 							content: '观看完视频可以自动保存哦',
@@ -722,7 +723,11 @@
 								wx.cloud.callFunction({
 									name: 'contentCheck',
 									data: {
-										value: buffer.data
+										// value: buffer.data,
+										imgData: wx.cloud.CDN({
+													type: 'filePath',
+													filePath: tempFilePathCompressed, // img 是你的临时文件的路径 eg: http://tmp/PIyID5dIdjc1024e6ee2d57f86591545056c0a6f4b986f.png
+												})
 									},
 									success(json) {
 										console.log("checkContent result", json)
@@ -865,7 +870,7 @@
 
 	.cans-id-mask {
 		position: absolute;
-		top: 2000px;
+		// top: 500px;
 		left: 1000px;
 	}
 
@@ -897,7 +902,7 @@
 	}
 
 	.ad {
-		margin: 50rpx 0rpx;
+		margin: 100rpx 0rpx;
 	}
 
 	.top-content {
