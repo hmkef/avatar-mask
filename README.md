@@ -1,8 +1,9 @@
-# avatar-mask
-头像助手小程序（头像框/文字/挂件等）
+# avatar
+### 节日头像框助手小程序（头像框/文字/挂件等）
+#### 自带后台管理接口，方便更新头像挂件等资源，可以无限开小程序
 
 
-![gh_5ae77ac8b1d9_258](https://user-images.githubusercontent.com/6927323/165258730-f2e912f9-7aae-4d04-b915-a42d35b8ba78.jpg)
+![gh_5ae77ac8b1d9_258](https://user-images.githubusercontent.com/6927323/187151336-01a52af1-7804-488e-822d-18daf687283f.jpg)
 
 
 <figure>
