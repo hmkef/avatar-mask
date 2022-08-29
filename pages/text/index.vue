@@ -1,5 +1,5 @@
 <template>
-	<view class="main">
+	<view class="main components-bggrad">
 		<view id="avatar-section">
 			<canvas canvas-id="cans-id-happines" class="isCan"></canvas>
 		</view>
@@ -688,11 +688,70 @@
 	.main {
 		background-color: #F8F8F8;
 	}
+	
+	//渐变背景变化
+	.components-bggrad {
+		margin: 0;
+		width: 100%;
+		// height: 100vh;
+		overflow: hidden;
+		color: #fff;
+		background: linear-gradient(45deg, #00F5D4, #01BEFF, #9A5CE5, #F15BB5);
+		background-size: 500% 500%;
+		animation: gradientBG 15s ease infinite;
+	}
+	
+	@keyframes gradientBG {
+		0% {
+			background-position: 0% 50%;
+		}
+	
+		50% {
+			background-position: 100% 50%;
+		}
+	
+		100% {
+			background-position: 0% 50%;
+		}
+	}
+	
+	//纯色背景变化
+	.components-bgcolor {
+		margin: 0;
+		// width: 100%;
+		// height: 100vh;
+		color: #fff;
+		overflow: hidden;
+		animation: color-loop 18s infinite;
+	}
+	
+	@keyframes color-loop {
+		0% {
+			background: #F15BB5;
+		}
+	
+		25% {
+			background: #00F5D4;
+		}
+	
+		50% {
+			background: #01BEFF;
+		}
+	
+		75% {
+			background: #9A5CE5;
+		}
+	
+		100% {
+			background: #F15BB5;
+		}
+	}
 
 	#avatar-section {
 		width: 270px;
 		height: 270px;
 		margin: auto auto;
+		margin-top: 180rpx;
 		// background-color: #C12928;
 		box-shadow: 6upx 6upx 8upx rgba(114, 130, 138, 0.5);
 
@@ -733,11 +792,6 @@
 		padding-right: 100rpx;
 		font-weight: 800;
 	}
-
-	// .action-btn {
-	// 	background-color: #FFC700;
-	// 	color: white;
-	// }
 
 	.share-wrapper {
 		padding-top: 50rpx;

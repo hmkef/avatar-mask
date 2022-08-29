@@ -12,6 +12,7 @@
 						<u-icon name="level" size="20" color="#FFAB3B"></u-icon>尊贵的VIP用户
 					</view>
 				</view>
+				<button class="mini-btn" type="warn" size="mini" open-type="contact">客服</button>
 			</view>
 			<!-- 系统特色 -->
 			<view class="special">
@@ -35,6 +36,7 @@
 				</u-grid>
 			</view>
 		</view>
+		
 		<view class="tool">
 			<view class="title">
 				<view>工具栏</view>
@@ -51,30 +53,16 @@
 			<view class="company">{{ store.copyright }}</view>
 			<view class="version">version v4.0.0</view>
 		</view>
-		<!-- <view class="head">
-			<view class="avatar">
-				<u-avatar size="81" mp-avatar src="http://pic2.sc.chinaz.com/Files/pic/pic9/202002/hpic2119_s.jpg">
-				</u-avatar>
-			</view>
+
+		<view>
+			<drag-button :isDock="true" :existTabBar="true" @btnClick="btnClick" />
+			<u-modal :show="noticeShow" @confirm="this.noticeShow = false" title="公告" confirmText="我已阅读">
+				<inform-com></inform-com>
+			</u-modal>
 		</view>
-		<view class="cell">
-			<view class="item">
-				<button class="btn" hover-class='none' open-type="contact">
-					<view class="label">在线客服</view>
-					<view class="right-icon">
-						<u-icon name="arrow-right"></u-icon>
-					</view>
-				</button>
-			</view>
-			<view class="item">
-				<button class="btn" hover-class='none' open-type="share">
-					<view class="label">合作建议</view>
-					<view class="right-icon">
-						<u-icon name="arrow-right"></u-icon>
-					</view>
-				</button>
-			</view>
-		</view> -->
+		
+		<ad unit-id="adunit-33c50b2678681905" ad-type="video" ad-theme="white"></ad>
+
 		<!-- 底部菜单 -->
 		<tabbar name="me"></tabbar>
 	</view>
@@ -82,7 +70,7 @@
 
 <script>
 	import {
-		store
+		store,help
 	} from '@/api/app.js';
 	import {
 		detail as UserDetail
@@ -91,22 +79,30 @@
 		navigation
 	} from '@/api/cover.js';
 	import tabbar from '@/components/tabbar/index.vue';
+
+	import dragButton from '@/components/drag-button';
+	import informCom from './inform.vue';
+
 	export default {
 		components: {
-			tabbar
+			tabbar,
+			dragButton,
+			informCom
 		},
 		data() {
 			return {
 				store: [],
 				inspire: [],
 				userInfo: [],
-				navigation: []
+				navigation: [],
+				noticeShow: false //公告显示
 			};
 		},
 		onLoad() {
 			this.getStore()
 			this.getUser()
 			this.getNavigation()
+			this.getHelp()
 		},
 		methods: {
 			onJump(item) {
@@ -140,6 +136,10 @@
 
 				})
 			},
+			btnClick() {
+				this.noticeShow = true;
+				console.log(this.noticeShow)
+			},
 			async getUser() {
 				let _this = this
 				await UserDetail({}).then(res => {
@@ -155,12 +155,21 @@
 				await store({}).then(res => {
 					_this.store = res.store
 					_this.inspire = res.inspire
-					if (res.inspire.ins_ad) {
-						AD.interstitial.load(res.inspire.ins_ad)
-						setTimeout(() => {
-							AD.interstitial.show();
-						}, 1500)
-					}
+					// if (res.inspire.ins_ad) {
+					// 	AD.interstitial.load(res.inspire.ins_ad)
+					// 	setTimeout(() => {
+					// 		AD.interstitial.show();
+					// 	}, 1500)
+					// }
+				}).catch(err => {
+					console.log(err)
+				})
+			},
+			async getHelp() {
+				let _this = this
+				await help({}).then(res => {
+					console.log('help--->', res.list)
+					uni.setStorageSync("notice",res.list);
 				}).catch(err => {
 					console.log(err)
 				})
@@ -187,7 +196,7 @@
 	}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 	.copyright {
 		width: 100%;
 		display: flex;
@@ -225,7 +234,7 @@
 
 	.background {
 		width: 100%;
-		min-height: 280rpx;
+		min-height: 300rpx;
 		background-color: #f35543;
 		border-radius: 0rpx 0rpx 15rpx 15rpx;
 		position: absolute;
@@ -239,7 +248,7 @@
 		margin: 0 auto;
 		background-color: #fff;
 		border-radius: 15rpx;
-		margin-top: 80rpx;
+		margin-top: 180rpx;
 		overflow: hidden;
 		padding: 30rpx;
 

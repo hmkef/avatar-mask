@@ -1,6 +1,6 @@
 <template>
 	<view class="content">
-		<image src="https://answer-1251511393.cos.ap-chongqing.myqcloud.com/1212/editor_bg.jpg" class="all-back"
+		<image src="https://746f-touxiang-img-3g7p52ycff534a65-1309329581.tcb.qcloud.la/editor_bg.jpg" class="all-back"
 			mode="widthFix"></image>
 		<view :class="on?'music on':''">
 			<image @click="onStopAudio" src="/static/images/hutou.png" style="width: 60rpx;height: 60rpx;"></image>

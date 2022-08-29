@@ -91,6 +91,9 @@
 				</view>
 			</scroll-view>
 		</view>
+		
+		<!-- 视频广告 -->
+		<ad unit-id="adunit-f89892f17940fbee" ad-type="video" ad-theme="white"></ad>
 
 		<!-- banner广告 -->
 		<view class="ad" v-if="inspire.banner_ad">
@@ -360,7 +363,7 @@
 						if (type === 'createImages') {
 							_this.avatarImage = info.substring(0, info.lastIndexOf('/') + 1) + '0';
 							uni.setStorageSync('avatar_image', _this.avatarImage);
-							// getApp().globalData.userAvatarUrl = _this.avatarImage;
+							getApp().globalData.userAvatarUrl = _this.avatarImage;
 
 							uni.downloadFile({
 								url: _this.avatarImage,
@@ -625,6 +628,7 @@
 						});
 					} else {
 						_this.saveCans();
+						
 					}
 				})
 			},
@@ -772,7 +776,7 @@
 	.avatar-container {
 		height: 290px;
 		width: 100%;
-		margin-top: 150rpx;
+		margin-top: 180rpx;
 		margin-left: auto;
 		margin-right: auto;
 		// background-size: 100%;
@@ -870,8 +874,7 @@
 
 	.cans-id-mask {
 		position: absolute;
-		// top: 500px;
-		left: 1000px;
+		margin-top: 800rpx;
 	}
 
 	.flip-horizontal {
