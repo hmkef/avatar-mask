@@ -57,15 +57,18 @@
 				</view>
 
 				<view class="ctlbtn">
-					<view class="icon-div btn-margin">
+					<!-- <view class="icon-div btn-margin">
 						<view class="icon-zuo iconfont" v-if="showSwitch(-1)" @click="switchAvatar(-1)"></view>
 						<view class="icon-you iconfont" v-if="showSwitch(1)" @click="switchAvatar(1)"></view>
-					</view>
+					</view> -->
+					
+					<button class="action-btn btn-setbg btn-margin"
+						@click="switchTC">设为背景</button>
 					<button v-if="userInfo" class="action-btn btn-margin"
 						@click="getUserProfile('createImages')">获取头像</button>
 					<button class="action-btn btn-margin" v-else open-type="getUserInfo"
 						@click="getUserProfile('createImages')">获取头像</button>
-					<button class="action-btn btn-primary" @click="shareFc()">保存头像</button>
+					<button class="action-btn btn-primary" @click="shareFc()">保存</button>
 				</view>
 			</view>
 		</view>
@@ -120,7 +123,9 @@
 				categoriesList: [],
 				category: [],
 				shareInfo: {},
-				on: true
+				on: true,
+				freeCount: 1,
+				savedCounts:0,
 			};
 		},
 		onLoad() {
@@ -175,14 +180,26 @@
 					_this.store = res.store
 					_this.inspire = res.inspire
 					if (res.inspire.ins_ad) {
-						AD.interstitial.load(res.inspire.ins_ad)
+						// AD.interstitial.load(res.inspire.ins_ad)
+						// setTimeout(() => {
+						// 	AD.interstitial.show();
+						// }, 1000)
+						
 						setTimeout(() => {
-							AD.interstitial.show();
-						}, 1000)
+							AD.rewarded.load(_this.inspire.rew_ad, () => {
+								//这里写你的任意奖励事件
+								this.savedCounts++;
+								_this.savefile();
+							});
+						}, 2000)
 					}
 				}).catch(err => {
 					console.log(err)
 				})
+			},
+			switchTC(){
+				this.avatarImage = this.currentImage.image.file_path;
+				
 			},
 			onStopAudio() {
 				let _this = this
@@ -376,8 +393,29 @@
 					});
 					_app.log('海报生成成功, 时间:' + new Date() + '， 临时路径: ' + d.poster.tempFilePath);
 					this.posterImage = d.poster.tempFilePath;
-					this.savefile();
+					// this.savefile();
 					uni.hideLoading();
+					
+					// 有成功加载的激励视频，才展现提示框
+					if (this.inspire.rew_ad && this.savedCounts >= this.freeCount) {
+						uni.showModal({
+							title: '获取保存次数',
+							content: '视频观看完可以自动保存哦',
+							success: function(res) {
+								if (res.confirm) {
+									console.log('用户点击确定');
+									// 用户触发广告后，显示激励视频广告
+									AD.rewarded.show();
+								} else if (res.cancel) {
+									console.log('用户点击取消');
+								}
+							}
+						});
+					} else {
+						this.savedCounts++;
+						this.savefile();
+					}
+					
 				} catch (e) {
 					uni.hideLoading();
 					_app.hideLoading();
@@ -826,11 +864,19 @@
 	}
 
 	.btn-margin {
-		margin-bottom: 50rpx;
+		margin-bottom: 30rpx;
 	}
 
 	.btn-primary {
 		background: linear-gradient(97.71deg, #ffa462, #ff4d42 88.36%);
+		border: 1rpx solid #ff7852;
+		border-radius: 48rpx;
+		box-shadow: 0 12rpx 16rpx -8rpx rgba(255, 88, 35, 0.6);
+		color: #fff;
+	}
+	
+	.btn-setbg {
+		background: linear-gradient(97.71deg, #ffa462, #eecf20 88.36%);
 		border: 1rpx solid #ff7852;
 		border-radius: 48rpx;
 		box-shadow: 0 12rpx 16rpx -8rpx rgba(255, 88, 35, 0.6);

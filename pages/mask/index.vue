@@ -31,7 +31,7 @@
 				:style="{top:cancelCenterY-10 + 'px', left:cancelCenterX-10 +'px', transform: 'rotate(' +90+ 'deg)'}"></text>
 		</view>
 		<view>
-			<canvas class="cans-id-mask" canvas-id="cans-id-mask"
+			<canvas v-show="tempShow" class="cans-id-mask" canvas-id="cans-id-mask"
 				style="height:270px;width:270px;margin-left: auto;margin-right: auto;" />
 		</view>
 		<view class="flex-sub text-center">
@@ -61,12 +61,12 @@
 					@click="chooseImage">选择图片</button>
 			</view>
 		</view>
-		<view class="grid justify-around share-wrapper">
+		<!-- <view class="grid justify-around share-wrapper">
 			<view class="grid col-2 animation-shake animation-speed-2 animation-delay-3">
 				<button class="cu-btn block line-orange lg share-btn" open-type="share">
 					<text class="cuIcon-upload"></text> <text class="text-yellow">分享给好友</text> </button>
 			</view>
-		</view>
+		</view> -->
 
 		<view class="top-content">
 			<scroll-view scroll-x :show-scrollbar="false" class="scroll-view">
@@ -212,6 +212,7 @@
 				touch_target: "",
 				start_x: 0,
 				start_y: 0,
+				tempShow:false,
 			}
 		},
 		computed: {
@@ -583,6 +584,7 @@
 					});
 					return;
 				}
+				this.tempShow = true;
 
 				let scale = this.scale;
 				let rotate = this.rotate;
@@ -612,7 +614,7 @@
 					pc.draw();
 
 					// 有成功加载的激励视频，才展现提示框
-					if (_this.inspire.rew_ad && _this.savedCounts >= this.freeCount) {
+					if (_this.inspire.rew_ad && _this.savedCounts >= _this.freeCount) {
 						uni.showModal({
 							title: '获取无限制使用',
 							content: '观看完视频可以自动保存哦',
@@ -628,7 +630,6 @@
 						});
 					} else {
 						_this.saveCans();
-						
 					}
 				})
 			},
@@ -699,6 +700,7 @@
 						uni.hideLoading()
 					}
 				}, this)
+				this.tempShow = false;
 			},
 			showModal: function(e) {
 				this.modalName = e.currentTarget.dataset.target;

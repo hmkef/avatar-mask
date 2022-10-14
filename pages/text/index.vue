@@ -1,7 +1,25 @@
 <template>
 	<view class="main components-bggrad">
-		<view id="avatar-section">
-			<canvas canvas-id="cans-id-happines" class="isCan"></canvas>
+		<view class="vertical">
+			<view id="avatar-section">
+				<canvas canvas-id="cans-id-happines" class="isCan"></canvas>
+			</view>
+		</view>
+		<view style="margin-top: 50rpx;margin-left:40rpx;">
+			左右：
+			<bing-progress bpname="bp1" handleHeight="20px" handleWidth="10px" widgetPos="top" widgetOffset="10px"
+				@change="change" @dragstart="dragstart" @dragend="dragend" :widgetOpacity="1" infoAlign="handle"
+				:showInfo="false" handleBorderRadius="5px" strokeWidth="10px">
+				<!-- <view class="widget" v-if="showWidget">{{widgetText}}</view> -->
+			</bing-progress>
+		</view>
+		<view style="margin-top:20rpx;margin-left:40rpx;">
+			上下：
+			<bing-progress bpname="test" handleHeight="20px" handleWidth="10px" widgetPos="top" widgetOffset="10px"
+				@change="change" @dragstart="dragstart" @dragend="dragend" :widgetOpacity="1" infoAlign="handle"
+				:showInfo="false" handleBorderRadius="5px" strokeWidth="10px" :max="80">
+				<!-- <view class="widget" v-if="showWidget">{{widgetText}}</view> -->
+			</bing-progress>
 		</view>
 
 		<view class="grid justify-around action-wrapper">
@@ -56,13 +74,15 @@
 		mapMutations
 	} from "vuex";
 	import tabbar from '@/components/tabbar/index.vue';
-	import addTips from "@/components/add-tips";
 
 	import AD from "@/utils/ad.js"
 
 	import {
 		store
 	} from '@/api/app.js';
+
+	import bingProgress from '@/components/progress.vue';
+	
 
 	// 在页面中定义激励视频广告
 	let videoAd = null;
@@ -72,7 +92,7 @@
 	export default {
 		components: {
 			tabbar,
-			addTips
+			bingProgress,
 		},
 		data() {
 			return {
@@ -124,6 +144,11 @@
 				inspire: [],
 				store: [],
 
+				show: false,
+				fontX: 0.2,
+				fontY: 1,
+
+
 			}
 		},
 		computed: {
@@ -141,6 +166,19 @@
 			}
 		},
 		onLoad(option) {
+
+			uni.loadFontFace({
+				global: true,
+				family: "DINMedium",
+				// source: 'url("https://tx.hencoder.cn/uploads/HanYiYanKaiW-2.ttf")',
+				source: 'url("https://tx.hencoder.cn/uploads/hylw.ttf")',
+				success: () => {
+					this.drawDefaultText()
+				},
+				scopes: ["webview", "native"],
+			});
+
+
 			console.log('onLoad---->', this.avatarPath)
 			this.avatarPath = '/static/images/text/纲手.jpg';
 			if (!!getApp().globalData.userAvatarFilePath) {
@@ -156,6 +194,7 @@
 			// });
 
 			let _this = this;
+
 
 			_this.getStore()
 
@@ -256,7 +295,73 @@
 			changeColor(e) {
 				console.log(e);
 				this.cornerBgColor = e.currentTarget.dataset.color;
-				this.paint();
+				this.drawDefaultText();
+			},
+			change(e) {
+				if (e.bpname == "bp1") {
+					this.widgetText = e.value
+					this.fontX = e.value * 0.008
+				} else if (e.bpname == "test") {
+					this.widgetText = e.value
+					this.fontY = e.value * 0.01 + 0.2
+				}
+				console.log('change', e)
+			},
+			dragging(e) {
+				console.log('ing', e)
+			},
+			dragend(e) {
+				if (e.bpname == "bp1") {
+					this.showWidget = false
+					this.drawDefaultText()
+				} else if (e.bpname == "test") {
+					this.showWidget = false
+					this.drawDefaultText()
+				}
+				console.log('end', e)
+			},
+			dragstart(e) {
+				if (e.bpname == "bp1") {
+					this.showWidget = true
+				}
+				console.log('start', e)
+			},
+			lowChange(val) {
+				this.low = val
+				console.log('lowChange:', val)
+			},
+			highChange(val) {
+				this.high = val
+				console.log('highChange:', val)
+			},
+			onWZJoystickUpdate(obj) {
+				this.wangzheRotate = obj.angle / (3.14159 / 180) + 90;
+			},
+			onBeetleJoystickUpdate(obj) {
+				this.beetleLeft += Math.cos(obj.angle) * (obj.power * 10);
+				this.beetleTop += Math.sin(obj.angle) * (obj.power * 10);
+				this.beetleRotate = obj.angle / (3.14159 / 180);
+			},
+			onCrossJoyStickUpdate(obj) {
+				this.crossupPressed = false;
+				this.crossrightPressed = false;
+				this.crossdownPressed = false;
+				this.crossleftPressed = false;
+				if (obj.angle > -2.35 && obj.angle < -0.75) {
+					this.crossupPressed = true;
+				} else if (obj.angle > -0.75 && obj.angle < 0.75) {
+					this.crossrightPressed = true;
+				} else if (obj.angle > 0.75 && obj.angle < 2.35) {
+					this.crossdownPressed = true;
+				} else {
+					this.crossleftPressed = true;
+				}
+			},
+			onCrossJoyStickCancel() {
+				this.crossupPressed = false;
+				this.crossrightPressed = false;
+				this.crossdownPressed = false;
+				this.crossleftPressed = false;
 			},
 			onKeyInput: function(event) {
 				this.wishText = event.target.value;
@@ -270,9 +375,9 @@
 					happinessFilePath = this.happinessPath;
 				}
 				this.drawCansBgImg(avatarFilePath);
-				this.drawCornerBg();
+				// this.drawCornerBg();
 				// this.drawHappiness(happinessFilePath);
-				this.drawDefaultText();
+				// this.drawDefaultText();
 				uni.vibrateShort({
 					success: function() {
 						console.log('vibrateShort');
@@ -289,7 +394,7 @@
 					.boarderWidth);
 			},
 			drawHappiness(happinessFilePath) {
-				this.ctx.drawImage(happinessFilePath, this.cornerX + 5, this.cornerY + 7, this.cansWidth * 0.25, this
+				this.ctx.drawImage(happinessFilePath, this.cornerX + 5, this.cornerY + 5, this.cansWidth * 0.25, this
 					.cansHeight *
 					0.25);
 				this.ctx.draw(true);
@@ -300,12 +405,14 @@
 			drawDefaultText() {
 				let textOption = {
 					text: this.wishText,
-					sLeft: 0.72,
-					sTop: 0.91,
+					sLeft: this.fontX, //0-0.8
+					sTop: this.fontY, //0.2-1
 					fontSize: 60,
-					color: 'white',
+					// color: 'white',
+					color: this.cornerBgColor,
 					bold: true,
-					lineHeight: 12
+					lineHeight: 12,
+					// fontFamily: "Comic Sans MS",
 				};
 				this._drawText(textOption);
 				uni.vibrateShort({
@@ -337,6 +444,9 @@
 				this.ctx.draw(true);
 			},
 			_drawText(item) {
+				this.ctx.clearRect(0, 0, this.cansWidth, this.cansHeight);
+				this.drawCansBgImg(this.avatarPath);
+				this.ctx.beginPath();
 				var isLeft
 				if (item.sLeft == 'center') {
 					isLeft = this.cansWidth * .5 - (item.fontSize * item.text.length) / 2
@@ -344,7 +454,7 @@
 					isLeft = item.sLeft * this.cansWidth
 				}
 				this.ctx.save()
-				if (item.bold) this.ctx.font = `normal bold ${item.fontSize}px edu-lishu`;
+				if (item.bold) this.ctx.font = `normal bold ${item.fontSize}px DINMedium`;
 				// if (item.bold) this.ctx.font = `normal bold ${item.fontSize}px ` + item.fontFamily;
 				// fontFamily
 				this.ctx.setFillStyle(item.color)
@@ -688,7 +798,7 @@
 	.main {
 		background-color: #F8F8F8;
 	}
-	
+
 	//渐变背景变化
 	.components-bggrad {
 		margin: 0;
@@ -700,21 +810,21 @@
 		background-size: 500% 500%;
 		animation: gradientBG 15s ease infinite;
 	}
-	
+
 	@keyframes gradientBG {
 		0% {
 			background-position: 0% 50%;
 		}
-	
+
 		50% {
 			background-position: 100% 50%;
 		}
-	
+
 		100% {
 			background-position: 0% 50%;
 		}
 	}
-	
+
 	//纯色背景变化
 	.components-bgcolor {
 		margin: 0;
@@ -724,24 +834,24 @@
 		overflow: hidden;
 		animation: color-loop 18s infinite;
 	}
-	
+
 	@keyframes color-loop {
 		0% {
 			background: #F15BB5;
 		}
-	
+
 		25% {
 			background: #00F5D4;
 		}
-	
+
 		50% {
 			background: #01BEFF;
 		}
-	
+
 		75% {
 			background: #9A5CE5;
 		}
-	
+
 		100% {
 			background: #F15BB5;
 		}
@@ -750,7 +860,7 @@
 	#avatar-section {
 		width: 270px;
 		height: 270px;
-		margin: auto auto;
+		// margin: auto auto;
 		margin-top: 180rpx;
 		// background-color: #C12928;
 		box-shadow: 6upx 6upx 8upx rgba(114, 130, 138, 0.5);
@@ -814,5 +924,122 @@
 
 	.ad {
 		margin: 100rpx 0rpx;
+	}
+
+
+
+	.content {
+		position: relative;
+		/* #ifndef APP-NVUE */
+		display: flex;
+		/* #endif */
+		flex-direction: column;
+		align-items: center;
+		justify-content: flex-start;
+		min-height: 100vh;
+		overflow: hidden;
+	}
+
+	.bp {
+		margin: 5px 10px;
+	}
+
+	.horizontal {
+		/* #ifndef APP-NVUE */
+		display: flex;
+		/* #endif */
+		flex-direction: column;
+		justify-content: space-around;
+		align-items: center;
+	}
+
+	.vertical {
+		/* #ifndef APP-NVUE */
+		display: flex;
+		/* #endif */
+		flex-direction: row;
+		justify-content: space-around;
+		align-items: center;
+	}
+
+	.center {
+		/* #ifndef APP-NVUE */
+		display: flex;
+		/* #endif */
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.btn-line {
+		/* #ifndef APP-NVUE */
+		display: flex;
+		/* #endif */
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.showValue {
+		/* #ifndef APP-NVUE */
+		display: flex;
+		/* #endif */
+		flex-direction: row;
+		justify-content: space-around;
+		align-items: center;
+		width: 750rpx;
+		padding: 5px;
+	}
+
+	.btn {
+		font-size: 16px;
+		margin: 5px;
+	}
+
+	.info {
+		border-top-color: #ececec;
+		border-top-width: 1px;
+		border-top-style: solid;
+		border-bottom-color: #ececec;
+		border-bottom-width: 1px;
+		border-bottom-style: solid;
+		width: 750rpx;
+		text-align: center;
+		background-color: #f8f8f8;
+		padding: 5px;
+		font-size: 16px;
+	}
+
+	.popup {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-evenly;
+		align-items: center;
+		position: absolute;
+		left: 0;
+		bottom: 0;
+		width: 100%;
+		height: 300px;
+		background-color: #007AFF;
+		transition: transform .4s ease-out;
+		transform: translateY(999px);
+		z-index: 99;
+		overflow: hidden;
+	}
+
+	.slide-in {
+		transform: translateY(0);
+	}
+
+	.widget {
+		width: 50px;
+		height: 50px;
+		font-size: 24px;
+		background-color: white;
+		border: gray solid 1px;
+		border-radius: 25px;
+		text-align: center;
+		line-height: 50px;
+		opacity: 0.8;
 	}
 </style>

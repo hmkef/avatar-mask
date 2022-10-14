@@ -4,7 +4,8 @@
 		<view class="head">
 			<view class="user">
 				<view class="avatar">
-					<u-avatar size="61" mp-avatar></u-avatar>
+					<image class="img" id="avatar-img" :src="avatarImage"></image>
+					<!-- <u-avatar size="61" mp-avatar></u-avatar> -->
 				</view>
 				<view class="nickname">
 					<view class="text">{{ store.name }}</view>
@@ -49,6 +50,10 @@
 				</view>
 			</u-cell-group>
 		</view>
+		<official-account></official-account>
+		
+		<!-- <ad unit-id="adunit-33c50b2678681905" ad-type="video" ad-theme="white"></ad> -->
+		
 		<view class="copyright">
 			<view class="company">{{ store.copyright }}</view>
 			<view class="version">version v4.0.0</view>
@@ -61,8 +66,6 @@
 			</u-modal>
 		</view>
 		
-		<ad unit-id="adunit-33c50b2678681905" ad-type="video" ad-theme="white"></ad>
-
 		<!-- 底部菜单 -->
 		<tabbar name="me"></tabbar>
 	</view>
@@ -95,7 +98,8 @@
 				inspire: [],
 				userInfo: [],
 				navigation: [],
-				noticeShow: false //公告显示
+				noticeShow: false ,//公告显示
+				avatarImage: uni.getStorageSync('avatar_image'),
 			};
 		},
 		onLoad() {
@@ -254,6 +258,13 @@
 
 		.avatar {
 			margin-right: 15rpx;
+			
+			.img {
+				background-color: #e9e0de;
+				border-radius: 15rpx;
+				height: 120rpx;
+				width: 120rpx;
+			}
 		}
 
 		.user {
@@ -280,7 +291,8 @@
 		}
 
 		.special {
-			display: flex;
+			// display: flex;
+			display: none;
 			flex-direction: row;
 			margin-top: 40rpx;
 			border-top: 1rpx dashed #595959;

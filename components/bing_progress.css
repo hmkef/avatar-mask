@@ -1,0 +1,67 @@
+.bing-progress {
+	position: relative;
+	/* #ifndef APP-NVUE */
+	display: flex;
+	/* #endif */
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-around;
+}
+.bp-marea {
+	/* #ifndef APP-NVUE */
+	display: flex;
+	/* #endif */
+	position: absolute;
+	left: 0;
+	top: 0;
+	flex-direction: row;
+	align-items: center;
+	text-align: center;
+	justify-content: space-around;
+	background-color: rgba(0,0,0,0);
+	z-index: 6;
+}
+.bp-mview,
+.bp-handle {
+	position: absolute;
+	/* #ifndef APP-NVUE */
+	display: flex;
+	/* #endif */
+	align-items: center;
+	text-align: center;
+	justify-content: center;
+	z-index: 5;
+}
+.bp-handle-text {
+	text-align: center;
+	z-index: 5;
+}
+.bp-bar_max {
+	position: absolute;
+	/* #ifndef APP-NVUE */
+	display: flex;
+	/* #endif */
+	flex-direction: row;
+	align-items: center;
+	margin: 0;
+	padding: 0;
+	z-index: 1;
+	overflow: hidden;
+}
+.bp-bar_active {
+	position: absolute;
+	z-index: 3;
+}
+.bp-bar_sub_active {
+	position: absolute;
+	z-index: 2;
+}
+.bp-value {
+	position: absolute;
+	text-align: center;
+	z-index: 4;
+}
+.bp-handle-widget {
+	position: absolute;
+	z-index: 99;
+}
