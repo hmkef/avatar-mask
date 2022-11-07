@@ -1,7 +1,7 @@
 <template>
 	<view class="container">
 		<view class="tabbar">
-			<u-tabbar :value="name" inactiveColor="#C2C2C2" activeColor="#595959" :border="false" :fixed="true"
+			<u-tabbar :value="name" inactiveColor="#C2C2C2" activeColor="#92c5fd" :border="false" :fixed="true"
 				:placeholder="true" :safeAreaInsetBottom="true">
 				<u-tabbar-item name="avatar" text="首页"
 					:icon="name=='avatar'?'/static/ui/tabbar/home-select-02.png':'/static/ui/tabbar/home.png'"
@@ -12,9 +12,9 @@
 				<u-tabbar-item name="mask" text="挂件"
 					:icon="name=='mask'?'/static/ui/tabbar/mask-on.png':'/static/ui/tabbar/mask-off.png'"
 					@click="onClickItem"></u-tabbar-item>
-				<u-tabbar-item name="text" text="文字"
+	<!-- 			<u-tabbar-item name="text" text="文字"
 					:icon="name=='text'?'/static/ui/tabbar/wenzi-on.png':'/static/ui/tabbar/wenzi-off.png'"
-					@click="onClickItem"></u-tabbar-item>
+					@click="onClickItem"></u-tabbar-item> -->
 				<u-tabbar-item name="me" text="我的"
 					:icon="name=='me'?'/static/ui/tabbar/me-select-02.png':'/static/ui/tabbar/me.png'"
 					@click="onClickItem"></u-tabbar-item>
@@ -70,4 +70,5 @@
 	};
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+</style>

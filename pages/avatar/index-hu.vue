@@ -1,29 +1,24 @@
 <template>
 	<view class="content">
-		<image :src="bgUrl" class="all-back" mode="scaleToFill"></image>
+		<image src="https://746f-touxiang-img-3g7p52ycff534a65-1309329581.tcb.qcloud.la/editor_bg.jpg" class="all-back"
+			mode="widthFix"></image>
 		<view :class="on?'music on':''">
-			<image @click="onStopAudio" src="/static/images/fu.png" style="width: 60rpx;height: 60rpx;"></image>
+			<image @click="onStopAudio" src="/static/images/hutou.png" style="width: 60rpx;height: 60rpx;"></image>
 		</view>
-		<!-- <view class="wrap">
+		<view class="wrap">
 			<view class="newtext">
-				<text class="text text12">第</text>
-				<text class="text text11">26</text>
-				<text class="text text10">届</text>
-				<text class="text text9">中国</text>
-				<text class="text text8">国际</text>
-				<text class="text text7">宠物</text>
-				<text class="text text6">水族</text>
-				<text class="text text5">展</text>
-			 	<text class="text text4">览</text>
-				<text class="text text3">会</text>
+				<text class="text text12">20</text>
+				<text class="text text11">22</text>
+				<text class="text text10">虎</text>
+				<text class="text text9">年</text>
+				<text class="text text8">●</text>
+				<text class="text text7">虎</text>
+				<text class="text text6">虎</text>
+				<text class="text text5">生</text>
+				<text class="text text4">威</text>
 			</view>
-		</view> -->
-		<!-- 	<view style="text-align:center;width: 100%;margin-top: 2%;">
-			<image src="../../static/images/ic_top.png" style="width: 70%;" mode="widthFix"></image>
-		</view> -->
-
-
-		<view class="top-content" style="margin-top: 23%;">
+		</view>
+		<view class="top-content">
 			<scroll-view scroll-x :show-scrollbar="false" class="scroll-view">
 				<view class="top-title">
 					<view class="title-unit" :class="{ 'title-select': item.selected }"
@@ -49,7 +44,7 @@
 
 		<view class="image-card">
 			<view class="photo-main-view">
-
+				<!--  -->
 				<view class="avatar-div " id="avatar-container">
 					<image class="img" id="avatar-img" :src="avatarImage"></image>
 					<view class="empty-view " v-if="!avatarImage">
@@ -61,20 +56,14 @@
 						v-if="currentImage && currentImage.image.file_path"></image>
 				</view>
 
-				<view>
-					<view class="icon-div btn-margin">
+				<view class="ctlbtn">
+					<!-- <view class="icon-div btn-margin">
 						<view class="icon-zuo iconfont" v-if="showSwitch(-1)" @click="switchAvatar(-1)"></view>
 						<view class="icon-you iconfont" v-if="showSwitch(1)" @click="switchAvatar(1)"></view>
-					</view>
-
-					<!-- 	<button open-type="chooseAvatar" @chooseavatar="onChooseAvatar">
-					头像填写
-					</button> 
-					 -->
-
-					<!-- 	
+					</view> -->
+					
 					<button class="action-btn btn-setbg btn-margin"
-						@click="switchTC">设为背景</button> -->
+						@click="switchTC">设为背景</button>
 					<button v-if="userInfo" class="action-btn btn-margin"
 						@click="getUserProfile('createImages')">获取头像</button>
 					<button class="action-btn btn-margin" v-else open-type="getUserInfo"
@@ -88,16 +77,11 @@
 				:style="{ width: (poster.width || 10) + 'px', height: (poster.height || 10) + 'px' }"></canvas>
 		</view>
 		<!-- 广告 -->
-		<!-- <view class="ad" v-if="inspire.banner_ad">
+		<view class="ad" v-if="inspire.banner_ad">
 			<ad :unit-id="inspire.banner_ad"></ad>
-		</view> -->
+		</view>
 		<!-- 底部菜单 -->
 		<tabbar name="avatar"></tabbar>
-
-		<!-- 	<view style="text-align:center;width: 100%;margin-top: 15%;">
-			<image src="../../static/images/ic_bottom.png" style="width: 80%;" mode="widthFix"></image>
-		</view> -->
-
 	</view>
 </template>
 
@@ -140,10 +124,8 @@
 				category: [],
 				shareInfo: {},
 				on: true,
-				freeCount: 2,
-				savedCounts: 0,
-				bgUrl: 'https://tx.hencoder.cn/uploads/cips-bg7.png',
-
+				freeCount: 1,
+				savedCounts:0,
 			};
 		},
 		onLoad() {
@@ -159,7 +141,7 @@
 			if (_this.muteBgMusic) {
 				// 开启静音
 				_this.$music.playBgm({
-					mute: false
+					mute: true
 				})
 			}
 		},
@@ -198,11 +180,11 @@
 					_this.store = res.store
 					_this.inspire = res.inspire
 					if (res.inspire.ins_ad) {
-						AD.interstitial.load(res.inspire.ins_ad)
-						setTimeout(() => {
-							AD.interstitial.show();
-						}, 1000)
-
+						// AD.interstitial.load(res.inspire.ins_ad)
+						// setTimeout(() => {
+						// 	AD.interstitial.show();
+						// }, 1000)
+						
 						setTimeout(() => {
 							AD.rewarded.load(_this.inspire.rew_ad, () => {
 								//这里写你的任意奖励事件
@@ -215,13 +197,9 @@
 					console.log(err)
 				})
 			},
-			switchTC() {
+			switchTC(){
 				this.avatarImage = this.currentImage.image.file_path;
-
-			},
-			onChooseAvatar(e) {
-				console.log(e)
-				this.avatarImage = e.detail.avatarUrl;
+				
 			},
 			onStopAudio() {
 				let _this = this
@@ -261,7 +239,6 @@
 					if (_this.category.length > 0) {
 						_this.$set(_this.category[0], 'selected', true);
 						_this.getImagesList(_this.category[0].category_id);
-						_this.bgUrl = _this.category[0].bg;
 					} else {
 						_this.category = []
 					}
@@ -304,8 +281,6 @@
 					info[0].selected = false;
 				}
 				_this.$set(item, 'selected', true);
-				console.log('背景--> ', item.bg)
-				_this.bgUrl = item.bg;
 				_this.getImagesList(item.category_id, num);
 			},
 			/**
@@ -420,7 +395,7 @@
 					this.posterImage = d.poster.tempFilePath;
 					// this.savefile();
 					uni.hideLoading();
-
+					
 					// 有成功加载的激励视频，才展现提示框
 					if (this.inspire.rew_ad && this.savedCounts >= this.freeCount) {
 						uni.showModal({
@@ -440,7 +415,7 @@
 						this.savedCounts++;
 						this.savefile();
 					}
-
+					
 				} catch (e) {
 					uni.hideLoading();
 					_app.hideLoading();
@@ -591,7 +566,7 @@
 	}
 
 	.wrap {
-		margin-top: 60rpx;
+		margin-top: 170rpx;
 
 		.contentwrap {
 			padding-bottom: 50px;
@@ -727,7 +702,6 @@
 	.content {
 		background-size: 100% 100%;
 		padding-top: 200rpx;
-		background-color: #91cefe;
 
 		.all-back {
 			position: fixed;
@@ -735,12 +709,11 @@
 			left: 0;
 			right: 0;
 			bottom: 0;
-			min-height: 91vh;
+			min-height: 100vh;
 			width: 750rpx;
 		}
 
 		.top-content {
-
 			background-color: #ffffff;
 			margin: 30rpx;
 			border-radius: 50rpx;
@@ -869,13 +842,11 @@
 		.icon-zuo {
 			position: absolute;
 			left: 0;
-			background-image: url('../../static/images/ic-left.png');
 		}
 
 		.icon-you {
 			position: absolute;
 			right: 0;
-			background-image: url('../../static/images/ic_right.png');
 		}
 	}
 
@@ -903,7 +874,7 @@
 		box-shadow: 0 12rpx 16rpx -8rpx rgba(255, 88, 35, 0.6);
 		color: #fff;
 	}
-
+	
 	.btn-setbg {
 		background: linear-gradient(97.71deg, #ffa462, #eecf20 88.36%);
 		border: 1rpx solid #ff7852;

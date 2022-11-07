@@ -37,7 +37,9 @@
 				</u-grid>
 			</view>
 		</view>
-		
+		<view class="ads">
+		<ad unit-id="adunit-33c50b2678681905" ad-type="video" ad-theme="white"></ad>
+		</view>
 		<view class="tool">
 			<view class="title">
 				<view>工具栏</view>
@@ -51,9 +53,7 @@
 			</u-cell-group>
 		</view>
 		<official-account></official-account>
-		
-		<!-- <ad unit-id="adunit-33c50b2678681905" ad-type="video" ad-theme="white"></ad> -->
-		
+				
 		<view class="copyright">
 			<view class="company">{{ store.copyright }}</view>
 			<view class="version">version v4.0.0</view>
@@ -209,6 +209,7 @@
 		align-items: center;
 		color: #595959;
 		margin-top: 60rpx;
+		margin-bottom: 80rpx;
 
 		.company {
 			font-size: 28rpx;
@@ -253,6 +254,7 @@
 		background-color: #fff;
 		border-radius: 15rpx;
 		margin-top: 180rpx;
+		margin-bottom: 20rpx;
 		overflow: hidden;
 		padding: 30rpx;
 
@@ -304,6 +306,17 @@
 			}
 		}
 	}
+	
+	.ads {
+		width: 95%;
+		margin: 0 auto;
+		background-color: #fff;
+		border-radius: 15rpx;
+		margin-top: 40rpx;
+		margin-bottom: 20rpx;
+		overflow: hidden;
+		// padding: 30rpx;
+		}
 
 	// button::after {
 	// 	border: none;

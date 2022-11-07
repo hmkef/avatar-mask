@@ -71,7 +71,14 @@
 				// "disableScroll": true,
 				"navigationStyle": "custom"
 			}
-		}, {
+		},{
+			"path": "pages/mask/index-cips",
+			"style": {
+				// "navigationBarBackgroundColor": "#C12928",
+				// "disableScroll": true,
+				"navigationStyle": "custom"
+			}
+		},{
 			"path": "pages/text/index",
 			"style": {
 				"navigationBarTitleText": "头像加文字",

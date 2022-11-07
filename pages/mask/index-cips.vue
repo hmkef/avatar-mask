@@ -10,11 +10,11 @@
 		<view class="avatar-container grid justify-center" id="avatar-container" @touchstart="touchStart"
 			@touchend="touchEnd" @touchmove="touchMove">
 			<view class="avatar-bg-border">
-				<image @touchstart="touchAvatarBg" class="bg avatar-bg" id="avatar-bg" :src="avatarPath"></image>
-				<view v-if="!avatarPath">
+				<image @touchstart="touchAvatarBg" class="bg avatar-bg" id="avatar-bg" :src="maskAvator"></image>
+				<!-- <view v-if="!avatarPath">
 					<image class="bg avatar-bg" src="/static/images/mask/avatar_mask.png">
 					</image>
-				</view>
+				</view> -->
 			</view>
 
 			<!-- <icon type="cancel" class="cancel" id="cancel" :style="{top:cancelCenterY-10 + 'px', left:cancelCenterX-10 + 'px'}"></icon> -->
@@ -31,7 +31,7 @@
 				:style="{top:cancelCenterY-10 + 'px', left:cancelCenterX-10 +'px', transform: 'rotate(' +90+ 'deg)'}"></text>
 		</view>
 		<view>
-			<canvas class="cans-id-mask" canvas-id="cans-id-mask"
+			<canvas v-show="tempShow" class="cans-id-mask" canvas-id="cans-id-mask"
 				style="height:270px;width:270px;margin-left: auto;margin-right: auto;" />
 		</view>
 		<view class="flex-sub text-center">
@@ -55,10 +55,10 @@
 				</button>
 			</view>
 			<view class="grid col-3">
-					<button id="btn-choose-img" class="cu-btn round action-btn bg-yellow shadow"
-					open-type="share">推荐</button>
-				<!-- <button id="btn-choose-img" class="cu-btn round action-btn bg-yellow shadow"
-					@click="chooseImage">选择图片</button> -->
+				<!-- 	<button id="btn-choose-img" class="cu-btn round action-btn bg-yellow shadow"
+					open-type="share">分享</button> -->
+				<button id="btn-choose-img" class="cu-btn round action-btn bg-yellow shadow"
+					@click="chooseImage">选择图片</button>
 			</view>
 		</view>
 		<!-- <view class="grid justify-around share-wrapper">
@@ -92,14 +92,14 @@
 			</scroll-view>
 		</view>
 		
-		<!-- banner广告 -->
-		<view class="ad" v-if="inspire.banner_ad">
-			<ad :unit-id="inspire.banner_ad"></ad>
-		</view>
-		
 		<!-- 视频广告 -->
 		<!-- <ad unit-id="adunit-f89892f17940fbee" ad-type="video" ad-theme="white"></ad> -->
 
+		<!-- banner广告 -->
+	<!-- 	<view class="ad" v-if="inspire.banner_ad">
+			<ad :unit-id="inspire.banner_ad"></ad>
+		</view>
+ -->
 		<view class="cu-modal" :class="modalName=='saveTip'?'show':''">
 			<view class="cu-dialog">
 				<view class="cu-bar bg-white justify-end">
@@ -174,7 +174,7 @@
 				isAndroid: getApp().globalData.IS_ANDROID,
 				modalName: null,
 				savedCounts: 0,
-				freeCount: 1,
+				freeCount: 100,
 				cansWidth: 270, // 宽度 px
 				cansHeight: 270, // 高度 px
 				avatarPath: getApp().globalData.userAvatarFilePath, //本地缓存头像
@@ -221,7 +221,14 @@
 			// }),
 			maskPic: function() {
 				console.log("maskPic", this.tempChoseImage)
+				// return this.tempChoseImage;
+				return this.avatarPath;
+			},
+			
+			maskAvator: function() {
+				// console.log("maskPic", this.tempChoseImage)
 				return this.tempChoseImage;
+
 			},
 
 		},
@@ -402,12 +409,12 @@
 					_this.store = res.store
 					_this.inspire = res.inspire
 
-					if (res.inspire.ins_ad) {
-						AD.interstitial.load(res.inspire.ins_ad)
-						setTimeout(() => {
-							AD.interstitial.show();
-						}, 1500)
-					}
+					// if (res.inspire.ins_ad) {
+					// 	AD.interstitial.load(res.inspire.ins_ad)
+					// 	setTimeout(() => {
+					// 		AD.interstitial.show();
+					// 	}, 1500)
+					// }
 
 					setTimeout(() => {
 						AD.rewarded.load(_this.inspire.rew_ad, () => {
@@ -602,35 +609,44 @@
 					const pc = wx.createCanvasContext('cans-id-mask');
 					const windowWidth = wx.getSystemInfoSync().windowWidth;
 					const mask_size = 100 * scale;
-
 					pc.clearRect(0, 0, _this.cansWidth, _this.cansHeight);
-					pc.drawImage(_this.avatarPath, 0, 0, _this.cansWidth, _this.cansHeight);
+					
+					// pc.drawImage(_this.tempChoseImage, 0, 0, _this.cansWidth, _this.cansHeight);
 					pc.translate(mask_center_x, mask_center_y);
-					pc.rotate(rotate * Math.PI / 180);
+					console.log(mask_center_x,mask_center_y)
+					// pc.rotate(rotate * Math.PI / 180);
+					
 					if (_this.isAndroid) {
 						_this.rotateY == 180 && pc.scale(-1, 1);
 					}
-					pc.drawImage(_this.maskPic, -mask_size / 2, -mask_size / 2, mask_size, mask_size);
+					pc.drawImage(_this.avatarPath, -mask_size / 2, -mask_size / 2, mask_size, mask_size);
+					// pc.drawImage(_this.maskPic, -mask_size / 2, -mask_size / 2, mask_size, mask_size);
+					
+					
+					pc.translate(-mask_center_x, -mask_center_y);
+					// pc.rotate(rotate * Math.PI / 180);
+					pc.drawImage(_this.tempChoseImage, 0, 0, _this.cansWidth, _this.cansHeight);
+					
 					pc.draw();
 
 					// 有成功加载的激励视频，才展现提示框
-					if (_this.inspire.rew_ad && _this.savedCounts >= _this.freeCount) {
-						uni.showModal({
-							title: '获取无限制使用',
-							content: '观看完视频可以自动保存哦',
-							success: function(res) {
-								if (res.confirm) {
-									console.log('用户点击确定');
-									// 用户触发广告后，显示激励视频广告
-									AD.rewarded.show();
-								} else if (res.cancel) {
-									console.log('用户点击取消');
-								}
-							}
-						});
-					} else {
+					// if (_this.inspire.rew_ad && _this.savedCounts >= _this.freeCount) {
+					// 	uni.showModal({
+					// 		title: '获取无限制使用',
+					// 		content: '观看完视频可以自动保存哦',
+					// 		success: function(res) {
+					// 			if (res.confirm) {
+					// 				console.log('用户点击确定');
+					// 				// 用户触发广告后，显示激励视频广告
+					// 				AD.rewarded.show();
+					// 			} else if (res.cancel) {
+					// 				console.log('用户点击取消');
+					// 			}
+					// 		}
+					// 	});
+					// } else {
 						_this.saveCans();
-					}
+					// }
 				})
 			},
 			flipHorizontal() {
@@ -875,21 +891,8 @@
 	}
 
 	.cans-id-mask {
-		position: fixed;
-		top: -99999upx;
-		left: -99999upx;
-		z-index: -99999;
-	}
-	
-	.hideCanvasView {
-		position: relative;
-	}
-	
-	.hideCanvas {
-		position: fixed;
-		top: -99999upx;
-		left: -99999upx;
-		z-index: -99999;
+		position: absolute;
+		margin-top: 800rpx;
 	}
 
 	.flip-horizontal {
